@@ -656,17 +656,15 @@ void import_modele_file(struct Genuse* GU)
 
     void (*set_modules[10])(struct SoftModele* SM, struct Archi_Info* AI, int i, torch::Tensor (**a)(torch::Tensor*));
     set_modules[0] = set_module_lin;
-    set_modules[1] = set_module_tdl;
-    set_modules[2] = set_module_rnn;
-    set_modules[3] = set_module_gru;
-    set_modules[4] = set_module_lstm;
+    set_modules[1] = set_module_rnn;
+    set_modules[2] = set_module_gru;
+    set_modules[3] = set_module_lstm;
 
     void (*set_weigths[10])(struct SoftModele*, struct Archi_Info*, int , FILE*);
     set_weigths[0] = set_weights_lin;
-    set_weigths[1] = set_weights_tdl;
-    set_weigths[2] = set_weights_rnn;
-    set_weigths[3] = set_weights_gru;
-    set_weigths[4] = set_weights_lstm;
+    set_weigths[1] = set_weights_rnn;
+    set_weigths[2] = set_weights_gru;
+    set_weigths[3] = set_weights_lstm;
 
     FILE *fichier = fopen(GU->path_info_model, "r");
 

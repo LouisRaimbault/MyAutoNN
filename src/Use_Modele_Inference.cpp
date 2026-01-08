@@ -12,10 +12,9 @@ void softmodele_to (struct SoftModele* SM, torch::Device device)
         switch(SM->type_modules[i]) 
         {
             case 0: reinterpret_cast<torch::nn::LinearImpl*>(SM->modules[i])->to(device); break;
-            case 1: reinterpret_cast<TimeDistributedLinear*>(SM->modules[i])->to(device); break;
-            case 2: reinterpret_cast<torch::nn::RNNImpl*>(SM->modules[i])->to(device); break;
-            case 3: reinterpret_cast<torch::nn::GRUImpl*>(SM->modules[i])->to(device); break;
-            case 4: reinterpret_cast<torch::nn::LSTMImpl*>(SM->modules[i])->to(device); break;
+            case 1: reinterpret_cast<torch::nn::RNNImpl*>(SM->modules[i])->to(device); break;
+            case 2: reinterpret_cast<torch::nn::GRUImpl*>(SM->modules[i])->to(device); break;
+            case 3: reinterpret_cast<torch::nn::LSTMImpl*>(SM->modules[i])->to(device); break;
         }
     }
 }
@@ -43,7 +42,7 @@ torch::Tensor inf_forward_rnn_0(void* module, torch::Tensor* x)
 
 torch::Tensor inf_forward_rnn_1(void* module, torch::Tensor* x)
 {
-    std::cout << "Yohoho \n";
+    
     torch::nn::RNNImpl* rnn = reinterpret_cast<torch::nn::RNNImpl*>(module);
     torch::Tensor out = std::get<0>(rnn->forward(*x));
     return out.select(1, out.size(1) - 1);
