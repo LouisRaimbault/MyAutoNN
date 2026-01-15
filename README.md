@@ -18,6 +18,7 @@ MyAutoNN provides a **graphical user interface (GUI)** developed using **Qt (C++
 Through this visual interface, the user is guided step by step to:
 - Configure the training of one or multiple models, or
 - Configure the application (inference) of an existing model.
+- Randomly generate multiple models based on chosen architecture parameters and select the top k models according to a decision criterion.
 
 Once the configuration is completed, a **configuration file is generated**.  
 The actual execution is currently done via **command-line interface (CLI)**.
@@ -81,7 +82,7 @@ sudo apt install qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools
 ## Getting binaries
 
 This project produces **two binaries** in the 2 **build** folders:
-- The **core Autotorch engine (CLI)**: `MyAutoNN`
+- The **core MyAutoML engine (CLI)**: `MyAutoNN`
 - The **graphical user interface (GUI)**: `qt_app`
 
 Before building, make sure all dependencies (libtorch and Qt) are correctly installed and configured.
@@ -135,10 +136,16 @@ To launch the GUI, run:
 select either model training or model application, then follow the step-by-step guidance
 in both cases, a configuration file will be generated
 
-**if you choose to train model, run** 
+**if you choose to train model (1), run** 
 
 ```
 ./build/MyAutoNN 1 pathConfigtrain
+```
+
+**if you choose top k best trained model (2), run** 
+
+```
+./build/MyAutoNN 2 pathConfigtrain k
 ```
 
 When you train one or more models, at least three output files will be generated.
@@ -151,10 +158,10 @@ The configuration files for rebuilding the models will be located in output/mode
 
 Important: the software currently does not handle invalid model architectures, incorrect configuration files, or incompatible model setups. Using such files may result in a segmentation fault or a Torch error."
 
-**if you choose to apply model, run** 
+**if you choose to apply model (3), run** 
 
 ```
-./build/MyAutoNN 2 pathConfigapply
+./build/MyAutoNN 3 pathConfigapply
 ```
 In this case, you must select the database file, the initial database information file, and the template file.
 
@@ -165,7 +172,8 @@ In the database/ folder, you will find an Iris.txt file containing a known (dupl
 
 The following screenshots provide an example of how to use the software.
 
-Here are some screenshots of the Autotorch interface and workflow:
+Here are some screenshots of the MyAutoML interface and workflow:
+
 
 | Train Model First Page| Model First Layer | Model Second Layer |
 |-------------|----------------|-----------------|
@@ -183,16 +191,31 @@ You should see in your terminal something like this
 
 You can now use the possibility to apply the model on another database, for this example we'll keep the same Iris.txt (which is quite stupid, I know, it's just to illustrate)
 
-![Terminal View](assets/im_05.png)
+![Apply model View](assets/im_05.png)
 
 You can now run
 ```
-./build/MyAutoML 2 configurations/Apply_Mod0_Iris.txt
+./build/MyAutoML 3 configurations/Apply_Mod0_Iris.txt
 ```
 
 
 You should see in your terminal something like this 
-![Terminal View](assets/im_06.png)
+![Terminal View 2](assets/im_06.png)
+
+
+## Another example : Using random models generation
+
+As with the *train_model* option, the random model generation option will provide you with a configuration file, which you can then use with option (1) (classic model training) or option (2) (top-k best models).
+
+Once this is done, you will be able to use option (3) (model application) in the same way as in the example mentioned above.
+
+![Random Gen View](assets/im_07.png)
+![Random Gen View](assets/im_08.png)
+
+As an example, with k = 5, You can now run the option (2) to get the 5 best models according to a criterion. 
+```
+./build/MyAutoML 2 configurations/Config_Iris.txt 
+```
 
 ## Next Steps
 

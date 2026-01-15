@@ -3,6 +3,8 @@
 #include "../include/Train_Modele_Window.h"
 #include "../include/Apply_Modele_Window.h"
 #include "../include/Modele_Window.h"
+#include "../include/Rdmgen_Modele_Window.h"
+#include "../include/Completion_Window.h"
 
 
 

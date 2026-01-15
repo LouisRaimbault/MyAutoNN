@@ -425,3 +425,82 @@ void print_bool_qualitys(struct Bool_Quality* Qb)
 
     std::cout << "\n============================================================\n\n";
 }
+
+void tri_array(double* values, int* indices, int nb) 
+{
+    int i, j, min, tmp_ind;
+    double tmp;
+
+    for (i = 0; i < nb - 1; i++) 
+        {
+            min = i;
+            for (j = i + 1; j < nb; j++) 
+                {
+                    if (values[j] > values[min]) 
+                        {
+                            min = j;
+                        }
+                }
+            // Échange
+            tmp = values[i]; values[i] = values[min]; values[min] = tmp;
+            tmp_ind = indices[i]; indices[i] = indices[min]; indices[min] = tmp_ind;
+        }
+}
+
+
+
+
+void order_model_by_quality (struct Genstruct* GS, int top_k)
+{
+    if (GS->TD->type_tgt == 0) 
+        {
+            // order selon M
+            double* precision_scores = (double*)malloc(GS->nb_modele * sizeof(double));
+            int* indices = (int*)malloc(GS->nb_modele * sizeof(int));
+            for (int i = 0; i < GS->nb_modele; ++i)
+                {
+                    precision_scores[i] = GS->tab_modeles[i].Q->QL.precision;
+                    indices[i] = i;
+                }  
+            tri_array (precision_scores, indices, GS->nb_modele);
+            struct Modele* tab_mod = new struct Modele [GS->nb_modele];
+            for (int i = 0; i < GS->nb_modele; ++i) {tab_mod[i] = GS->tab_modeles[indices[i]];}
+            delete [] GS->tab_modeles;
+            GS->tab_modeles = tab_mod;
+        }
+
+
+    if (GS->TD->type_tgt == 1) // Quanti
+        {
+            double* R2_scores = (double*)malloc(GS->nb_modele * sizeof(double));
+            int* indices = (int*)malloc(GS->nb_modele * sizeof(int));
+            for (int i = 0; i < GS->nb_modele; ++i)
+                {
+                    R2_scores[i] = GS->tab_modeles[i].Q->QT.r2;
+                    indices[i] = i;
+                }  
+            tri_array (R2_scores, indices, GS->nb_modele);
+            struct Modele* tab_mod = new struct Modele [GS->nb_modele];
+            for (int i = 0; i < GS->nb_modele; ++i) {tab_mod[i] = GS->tab_modeles[indices[i]];}
+            delete [] GS->tab_modeles;
+            GS->tab_modeles = tab_mod;
+        }
+
+    if (GS->TD->type_tgt == 2) // Booléen 
+        {
+            // order selon M
+            double* precision_scores = (double*)malloc(GS->nb_modele * sizeof(double));
+            int* indices = (int*)malloc(GS->nb_modele * sizeof(int));
+            for (int i = 0; i < GS->nb_modele; ++i)
+                {
+                    precision_scores[i] = GS->tab_modeles[i].Q->QB.precision;
+                    indices[i] = i;
+                }  
+            tri_array (precision_scores, indices, GS->nb_modele);
+            struct Modele* tab_mod = new struct Modele [GS->nb_modele];
+            for (int i = 0; i < GS->nb_modele; ++i) {tab_mod[i] = GS->tab_modeles[indices[i]];}
+            delete [] GS->tab_modeles;
+            GS->tab_modeles = tab_mod;
+        }
+    
+}

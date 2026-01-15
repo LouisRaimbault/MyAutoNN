@@ -8,6 +8,7 @@
 #include "../include/Export_Latex.h"
 #include "../include/Export_Modele.h"
 #include "../include/Use_Modele.h"
+#include "../include/Get_Quality_Modele.h"
 #include "../include/one_shot.h"
 
 
@@ -296,11 +297,64 @@ int main (int argc, char** argv)
 
     if (atoi(argv[1]) == 2)
         {
+            int top_k = atoi(argv[3]);
+            srandom(time(NULL));
+            struct Genstruct GS;
+            GS.PD = (struct Pure_Data*)malloc(sizeof(struct Pure_Data));
+            GS.TD = (struct Torch_Data*)malloc(sizeof(struct Torch_Data));
+            GS.TB = (struct Torch_Batch*)malloc(sizeof(struct Torch_Batch));
+            
+            get_config_from_configfile (argv[2], &GS);
+            
+            get_data (&GS);
+            construct_batch(&GS);
+            get_config_from_data (&GS);
+
+            torch::Device device (torch::kCPU);
+
+
+            struct Qualitys** tab_q = (struct Qualitys**)malloc(GS.nb_modele*sizeof(struct Qualitys*));
+
+            for (int i = 0; i < GS.nb_modele; ++i)
+                {
+                    print_modele(&(GS.tab_modeles[i]));
+                    modele_init(&(GS.tab_modeles[i]));
+                    modele_train (&(GS.tab_modeles[i]), GS.TB ,device);
+                    modele_test (&(GS.tab_modeles[i]), GS.TD, GS.PD->type_targetmodel);
+                }
+
+            order_model_by_quality (&GS, top_k);
+            for (int i = 0; i < top_k; ++i)
+                {
+                    tab_q[i] = GS.tab_modeles[i].Q;
+                    export_modele_file(&(GS.tab_modeles[i]), i);
+                }    
+
+            GS.nb_modele = top_k;
+            export_tex_report(&GS, tab_q);
+
+            clean_torch_batch (GS.TB);
+
+            clean_torch_data (GS.TD, &GS);
+
+            for (int i = 0; i < GS.nb_modele; ++i) {clean_modele(&(GS.tab_modeles[i]));}
+            
+            delete [] GS.tab_modeles;
+
+            return 0;
+        }
+
+
+
+    if (atoi(argv[1]) == 3)
+        {
 
             struct Genuse GU;
+
             get_genuse_paths(&GU, argv[2]);
             get_use_data(&GU);
             import_modele_file(&GU);
+            std::cout << "avant modele use \n";
             modele_use(&GU);
             clean_softmodele (GU.SM);
             clean_use_data(GU.UD);

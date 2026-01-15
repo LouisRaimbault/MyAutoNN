@@ -18,12 +18,14 @@ void write_file_apply_modele(struct Apply_Modele_Values* AMV)
     size_t len = strlen(AMV->txtdestfolder) + strlen(AMV->txtconfigname) + 2;
 
     char* filename = (char*)malloc(len * sizeof(char));
+    
 
     // concaténation dossier + "/" + nom
     snprintf(filename, len, "%s/%s",
              AMV->txtdestfolder,
              AMV->txtconfigname);
 
+    std::cout << "filename = " << std::string(filename) << "\n";
     FILE* f = fopen(filename, "w");
 
 
